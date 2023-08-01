@@ -8,12 +8,12 @@ require('dotenv').config()
 const getAllCategories = async (req, res) => {
     try {
         await connect(process.env.MONGO_URL)
-  
-            const allCategories = await Category.find()
 
-            res.json({
-                category: allCategories
-            })
+        const allCategories = await Category.find()
+
+        res.json({
+            category: allCategories
+        })
 
     }
     catch (error) {
@@ -25,17 +25,19 @@ const getAllCategories = async (req, res) => {
 
 
 const getCategoryById = async (req, res) => {
+    const { _id } = req.params
     try {
+        await connect(process.env.MONGO_URL)
+
+        const category = await Category.findOne({ _id })
+
+        res.json({ category })
 
     }
-
-
-
     catch (error) {
         res.status(400).json({
             message: error.message
         })
-
     }
 }
 
@@ -80,7 +82,23 @@ const createCategory = async (req, res) => {
 
 
 const updateCategory = async (req, res) => {
+
+    const { _id, CategoryName, CategoryImage } = req.body
+    const filter = { _id };
+    const update = { CategoryName, CategoryImage };
     try {
+        await connect(process.env.MONGO_URL)
+
+     await Category.findOneAndUpdate(filter, update, {
+            new: true
+        });
+
+        const category = await Category.find()
+
+        res.json({
+            message: "Success",
+            category
+        })
 
     }
 
@@ -96,17 +114,22 @@ const updateCategory = async (req, res) => {
 
 
 const deleteCategory = async (req, res) => {
+    const { _id } = req.body
     try {
+        await connect(process.env.MONGO_URL)
+        await Category.findByIdAndDelete({ _id })
+        const category = await Category.find()
+
+        res.status(200).json({
+            message: "deleted Successfully",
+            category
+        })
 
     }
-
-
-
     catch (error) {
         res.status(400).json({
             message: error.message
         })
-
     }
 }
 
