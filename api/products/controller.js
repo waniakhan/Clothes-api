@@ -59,6 +59,8 @@ const getProductByCategory = async (req, res) => {
             return res.status(404).json({
                 message: 'No products found for the given category',
             });
+        }else {
+            res.json({ products });
         }
     } catch (error) {
         res.status(400).json({
