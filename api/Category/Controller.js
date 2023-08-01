@@ -4,7 +4,7 @@ const { connect } = require('mongoose')
 require('dotenv').config()
 
 
-
+//=============All Categories==========//
 const getAllCategories = async (req, res) => {
     try {
         await connect(process.env.MONGO_URL)
@@ -23,7 +23,28 @@ const getAllCategories = async (req, res) => {
     }
 }
 
-
+//=============Category by name==========//
+const getCategoryByName = async (req, res) => {
+    const { CategoryName } = req.params;
+    try {
+      await connect(process.env.MONGO_URL);
+  
+      const category = await Category.findOne({ CategoryName });
+  
+      if (!category) {
+        return res.status(404).json({
+          message: 'Category not found',
+        });
+      }
+  
+      res.json({ category });
+    } catch (error) {
+      res.status(400).json({
+        message: error.message,
+      });
+    }
+  };
+//=============Category by id==========//
 const getCategoryById = async (req, res) => {
     const { _id } = req.params
     try {
@@ -41,6 +62,7 @@ const getCategoryById = async (req, res) => {
     }
 }
 
+//=============Create category==========//
 const createCategory = async (req, res) => {
     const { CategoryName, CategoryImage } = req.body
 
@@ -80,7 +102,7 @@ const createCategory = async (req, res) => {
     }
 }
 
-
+//=============Update category==========//
 const updateCategory = async (req, res) => {
 
     const { _id, CategoryName, CategoryImage } = req.body
@@ -112,7 +134,7 @@ const updateCategory = async (req, res) => {
     }
 }
 
-
+//=============Delete category==========//
 const deleteCategory = async (req, res) => {
     const { _id } = req.body
     try {
@@ -133,4 +155,4 @@ const deleteCategory = async (req, res) => {
     }
 }
 
-module.exports = { getAllCategories, getCategoryById, createCategory, updateCategory, deleteCategory }
+module.exports = { getAllCategories, getCategoryById, createCategory, updateCategory, deleteCategory, getCategoryByName }
