@@ -1,6 +1,21 @@
-const Brand = require('./Model'); 
+const Brand = require('./Model');
 const { connect } = require('mongoose')
 require('dotenv').config()
+
+
+// ============== Get All Brands ============= //
+
+const getAllBrands = async (req, res) => {
+    try {
+        await connect(process.env.MONGO_URL);
+        const brands = await Brand.find();
+        res.json({ brands });
+    } catch (error) {
+        res.status(400).json({
+            message: error.message,
+        });
+    }
+};
 
 //=============Create brand==========//
 
@@ -129,4 +144,4 @@ const deleteBrand = async (req, res) => {
     }
 };
 
-module.exports = { createBrand, getBrandByName, getBrandById, updateBrand, deleteBrand };
+module.exports = { getAllBrands, createBrand, getBrandByName, getBrandById, updateBrand, deleteBrand };
