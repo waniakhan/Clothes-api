@@ -7,7 +7,7 @@ require('dotenv').config()
 
 const getAllCategories = async (req, res) => {
     try {
-        await connect(process.env.MONGO_URI)
+        await connect(process.env.MONGO_URL)
   
             const allCategories = await Category.find()
 
@@ -50,7 +50,7 @@ const createCategory = async (req, res) => {
 
     else {
         try {
-            await connect(process.env.MONGO_URI)
+            await connect(process.env.MONGO_URL)
             const checkExisting = await Category.exists({ CategoryName })
 
             if (checkExisting) {
