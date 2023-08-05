@@ -20,9 +20,9 @@ const getAllBrands = async (req, res) => {
 //=============Create brand==========//
 
 const createBrand = async (req, res) => {
-    const { BrandName } = req.body;
+    const { BrandName, BrandImage } = req.body;
 
-    if (!BrandName) {
+    if (!BrandName || !BrandImage) {
         return res.status(403).json({
             message: "Missing Required Field",
         });
@@ -38,7 +38,7 @@ const createBrand = async (req, res) => {
             });
         }
 
-        await Brand.create({ BrandName });
+        await Brand.create({ BrandName, BrandImage });
         const allBrands = await Brand.find();
 
         res.json({
