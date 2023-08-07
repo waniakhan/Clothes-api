@@ -24,33 +24,34 @@ const createBrand = async (req, res) => {
 
     if (!BrandName || !BrandImage) {
         return res.status(403).json({
-            message: "Missing Required Field",
+            message: "Missing Required Field"
         });
-    }
+    } else {
+        try {
+            await connect(process.env.MONGO_URL);
+            const checkExisting = await Brand.exists({ BrandName });
 
-    try {
-        await connect(process.env.MONGO_URL);
-        const checkExisting = await Brand.exists({ BrandName });
+            if (checkExisting) {
+                res.status(400).json({
+                    message: "Brand Already Exists"
+                });
+            } else {
+                await Brand.create({ BrandName, BrandImage });
+                const allBrands = await Brand.find();
 
-        if (checkExisting) {
-            return res.status(400).json({
-                message: "Brand already exists",
+                res.json({
+                    message: "Brand Created",
+                    brands: allBrands
+                });
+            }
+        } catch (error) {
+            res.status(400).json({
+                message: error.message
             });
         }
-
-        await Brand.create({ BrandName, BrandImage });
-        const allBrands = await Brand.find();
-
-        res.json({
-            message: "Brand created successfully",
-            brands: allBrands,
-        });
-    } catch (error) {
-        res.status(400).json({
-            message: error.message,
-        });
     }
 };
+
 
 //=============Get brand by name==========//
 
@@ -101,9 +102,9 @@ const getBrandById = async (req, res) => {
 //=============Update brand==========//
 
 const updateBrand = async (req, res) => {
-    const { _id, BrandName } = req.body;
+    const { _id, BrandName, BrandImage } = req.body;
     const filter = { _id };
-    const update = { BrandName };
+    const update = { BrandName, BrandImage };
     try {
         await connect(process.env.MONGO_URL);
 

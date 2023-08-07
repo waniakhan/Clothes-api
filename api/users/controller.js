@@ -51,53 +51,47 @@ const signup = async (req, res) => {
 //=========== login ========//
 
 const login = async (req, res) => {
-    const { email, password } = req.body
+    const { email, password } = req.body;
     try {
         await connect(process.env.MONGO_URL)
-        const checkExistUser = await user.findOne({ email: email })
-        if (!checkExistUser) {
+        const existingUser = await user.findOne({ email: email });
+        
+        if (!existingUser) {
             res.status(404).json({
-                message: "user not found"
-            })
-        }
-        else {
-            const decryptPass = await compare(password, checkExistUser.password)
-            console.log(decryptPass)
-
-            if (email == checkExistUser.email && decryptPass) {
-
+                message: "User not found"
+            });
+        } else {
+            const decryptPassword = await compare(password, existingUser.password);
+            
+            if (email == existingUser.email && decryptPassword) {
                 const token = sign(
                     {
-                        username: checkExistUser.username,
-                        id: checkExistUser._id,
-                        email: checkExistUser.email
-                    }
-                    ,
+                        id: existingUser._id,
+                        username: existingUser.username,
+                        email: existingUser.email,
+                        profilePic: existingUser. profilePic,
+                        role: existingUser.role
+                    },
                     process.env.JWT_SECRET
-                )
+                );
+
                 res.status(200).json({
-                    message: "successfully signed in",
+                    message: "Successfully Logged in",
                     token: token
-                })
-            }
-            else {
+                });
+            } else {
                 res.json({
-                    message: "Invalid credentials"
-                })
+                    message: "Invalid Credentials"
+                });
             }
-
-
-
         }
-    }
-    catch (error) {
+    } catch (error) {
         res.json({
             message: error.message
-        })
-
+        });
     }
+};
 
-}
 
 //===========all users ========//
 
