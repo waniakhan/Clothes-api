@@ -13,7 +13,7 @@ const signup = async (req, res) => {
     try {
 
         await connect(process.env.MONGO_URL)
-        // console.log("DB CONNECTED")
+        console.log("DB CONNECTED")
 
         const checkExist = await user.exists({ email: email })
 
@@ -42,9 +42,10 @@ const signup = async (req, res) => {
         }
     }
     catch (error) {
-        res.json({
-            message: "error"
-        })
+        console.error("Signup Error:", error);
+        res.status(500).json({
+            message: "Internal Server Error"
+        });
     }
 }
 

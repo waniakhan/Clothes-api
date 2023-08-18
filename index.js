@@ -17,6 +17,7 @@ app .use('/api', require('./api/users/Router'))
 app.use('/api', require('./api/Category/Router') )
 app.use('/api', require('./api/Brands/Router') )
 app.use('/api', require('./api/products/Router') )
+app.use('/api', require('./api/orders/Router') )
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

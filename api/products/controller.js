@@ -5,19 +5,33 @@ require('dotenv').config()
 // =============Create Product=============//
 
 const createProduct = async (req, res) => {
-    const { products } = req.body;
+    const { productName, thumbnail, description, price, category, brand, images } = req.body
 
-    if (!products || !Array.isArray(products) || products.length === 0) {
-        return res.status(403).json({
-            message: "Missing or invalid products data",
-        });
-    } else {
+    if (!productName || !thumbnail || !description || !price || !category || !brand || !images) {
+        res.status(400).json({ message: 'Invalid Payload' })
+    }
+
+    else {
         try {
             await connect(process.env.MONGO_URL);
-            await Product.insertMany(products);
-            res.json({ message: 'Products created successfully' });
-        } catch (error) {
-            res.status(400).json({ message: error.message });
+            const checkExisting = await Product.exists({ productName })
+            if (checkExisting) {
+                res.status(403).json({ message: "Product Already Exists" })
+            }
+            
+            else {
+              
+                await Product.create({ productName, thumbnail, description, price, category, brand, images })
+                const products = await Product.find()
+                res.status(201).json({
+                    message: "Product Created Successfully",
+                    products
+                })
+            }
+
+        }
+        catch (error) {
+            res.status(400).json({ message: error.message })
         }
     }
 };
